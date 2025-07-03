@@ -1,0 +1,13 @@
+{
+    "name": "consul-playground",
+    "image": "mcr.microsoft.com/devcontainers/go:1.4.3-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers-extra/features/consul-asdf:2": {},
+        "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+            "packages": "dnsutils"
+        }
+    },
+    "postAttachCommand": "docker compose up --wait --detach",
+    "remoteUser": "vscode"
+}

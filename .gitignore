@@ -1,0 +1,16 @@
+*
+
+!.gitignore
+
+!.devcontainer/
+!.devcontainer/devcontainer.json
+
+!config/
+!config/*.json
+!config/services/
+!config/services/*.hcl
+
+!docker-compose.yaml
+
+!*.go
+!go.mod
