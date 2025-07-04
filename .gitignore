@@ -6,11 +6,14 @@
 !.devcontainer/devcontainer.json
 
 !config/
-!config/*.json
-!config/services/
-!config/services/*.hcl
+!config/consul/
+!config/consul/*.json
+!config/haproxy/
+!config/haproxy/*.cfg
+
 
 !docker-compose.yaml
 
 !*.go
 !go.mod
+!Dockerfile

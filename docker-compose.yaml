@@ -1,14 +1,55 @@
-version: "3.7"
-
 services:
     consul-server:
-        image: docker.io/hashicorp/consul:1.15.4
-        container_name: consul-server
-        restart: always
+        image: docker.io/library/consul:1.15.4
+        hostname: consul
         volumes:
-            - ./config/server.json:/consul/config/server.json:ro
+            - ./config/consul/server.json:/consul/config/server.json:ro
         ports:
             - "8500:8500"
             - "8600:8600/tcp"
             - "8600:8600/udp"
-        network_mode: host
+        networks:
+            playground-network:
+
+    backend-1: &backend
+        build: .
+        hostname: backend-1
+        environment:
+            - PORT=5000
+        expose:
+            - "5000"
+        depends_on:
+            - consul-server
+        networks:
+            playground-network:
+                ipv4_address: 10.70.90.201
+
+    backend-2:
+        <<: *backend
+        hostname: backend-2
+        networks:
+            playground-network:
+                ipv4_address: 10.70.90.202
+
+    haproxy:
+        image: docker.io/library/haproxy:3.2-bookworm
+        hostname: haproxy
+        user: root
+        volumes:
+            - ./config/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+        ports:
+            - "8000:8000" # Main load balancer port
+            - "8404:8404" # HAProxy stats page
+        depends_on:
+            - consul-server
+            - backend-1
+            - backend-2
+        networks:
+            playground-network:
+
+networks:
+    playground-network:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.70.90.0/24

@@ -1,0 +1,44 @@
+{
+    "node_name": "consul-server",
+    "server": true,
+    "bootstrap": true,
+    "ui_config": {
+        "enabled": true
+    },
+    "datacenter": "dc1",
+    "data_dir": "/consul/data",
+    "log_level": "INFO",
+    "addresses": {
+        "http": "0.0.0.0",
+        "dns": "0.0.0.0"
+    },
+    "client_addr": "0.0.0.0",
+    "ports": {
+        "dns": 8600
+    },
+    "recursors": ["8.8.8.8"],
+    "services": [
+        {
+            "name": "backend",
+            "id": "backend-1",
+            "address": "10.70.90.201",
+            "port": 5000,
+            "check": {
+                "interval": "5s",
+                "timeout": "2s",
+                "http": "http://backend-1:5000/health"
+            }
+        },
+        {
+            "name": "backend",
+            "id": "backend-2",
+            "address": "10.70.90.202",
+            "port": 5000,
+            "check": {
+                "interval": "5s",
+                "timeout": "2s",
+                "http": "http://backend-2:5000/health"
+            }
+        }
+    ]
+}

@@ -16,26 +16,35 @@ import (
 var shuttingDown int32
 
 func health(w http.ResponseWriter, req *http.Request) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = "unknown"
+	}
 	// Check if we're in shutdown mode
 	if atomic.LoadInt32(&shuttingDown) == 1 {
 		fmt.Println("health: Shutdown")
-
 		w.WriteHeader(http.StatusServiceUnavailable)
-		fmt.Fprintf(w, "Shutdown")
+		fmt.Fprintf(w, "Shutdown from %s", hostname)
 		return
 	}
 	fmt.Println("health: Ok")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Ok")
+	fmt.Fprintf(w, "Ok from %s", hostname)
 }
 
 func main() {
+	// Get port from environment variable, default to 5000
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
+
 	// Create a new HTTP server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", health)
 
 	server := &http.Server{
-		Addr:    ":5000",
+		Addr:    ":" + port,
 		Handler: mux,
 	}
 
@@ -45,7 +54,7 @@ func main() {
 
 	// Start the server in a goroutine
 	go func() {
-		fmt.Println("Server starting on :5000")
+		fmt.Println("Server starting on :" + port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server failed to start: %v", err)
 		}
